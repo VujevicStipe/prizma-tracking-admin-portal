@@ -1,0 +1,286 @@
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 16rem;
+  color: #6B7280;
+}
+
+.spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 3px solid #E5E7EB;
+  border-top-color: #10B981;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.statCard {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+}
+
+.statContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.statLabel {
+  color: #6B7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin: 0 0 0.5rem 0;
+}
+
+.statValue {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #10B981;
+  margin: 0;
+}
+
+.statIcon {
+  font-size: 2rem;
+  background: #D1FAE5;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggleCard {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+}
+
+.toggleButtons {
+  display: flex;
+  gap: 1rem;
+}
+
+.toggleButton {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #F3F4F6;
+  color: #6B7280;
+}
+
+.toggleButton:hover {
+  background: #E5E7EB;
+}
+
+.toggleButton.active {
+  background: #10B981;
+  color: white;
+}
+
+.content {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  min-height: 600px;
+}
+
+.liveView {
+  height: 100%;
+}
+
+.historyView {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.historyView h2 {
+  margin: 0 0 1rem 0;
+  color: #1F2937;
+  font-size: 1.25rem;
+}
+
+.historyGrid {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: 1.5rem;
+  height: 600px;
+}
+
+.sessionListColumn {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sessionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.sessionCard {
+  background: #F9FAFB;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  border: 2px solid #E5E7EB;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sessionCard:hover {
+  border-color: #10B981;
+  background: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.sessionCardActive {
+  border-color: #10B981;
+  background: white;
+  box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2);
+}
+
+.sessionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.sessionWorker {
+  font-weight: 600;
+  color: #1F2937;
+  font-size: 1rem;
+}
+
+.sessionStatus {
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.statusActive {
+  background: #D1FAE5;
+  color: #059669;
+}
+
+.statusCompleted {
+  background: #E0E7FF;
+  color: #4F46E5;
+}
+
+.sessionInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: #6B7280;
+  margin-bottom: 0.5rem;
+}
+
+.territoryBadge {
+  display: inline-flex;
+  align-items: center;
+  background: #FEF3C7;
+  color: #92400E;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  width: fit-content;
+}
+
+.flyerBadge {
+  display: inline-flex;
+  align-items: center;
+  background: #DBEAFE;
+  color: #1E40AF;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  width: fit-content;
+}
+
+.sessionTime {
+  font-size: 0.75rem;
+  color: #9CA3AF;
+  font-style: italic;
+}
+
+.mapColumn {
+  background: white;
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.mapPlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: #F9FAFB;
+  border-radius: 0.75rem;
+  border: 2px dashed #E5E7EB;
+}
+
+.placeholderIcon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.placeholderText {
+  color: #6B7280;
+  font-size: 1rem;
+  margin: 0;
+}
+
+@media (max-width: 1024px) {
+  .historyGrid {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  
+  .sessionListColumn {
+    max-height: 400px;
+  }
+  
+  .mapColumn {
+    min-height: 500px;
+  }
+}

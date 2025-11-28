@@ -1,0 +1,191 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 1rem;
+  overflow-y: auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #E5E7EB;
+  flex-shrink: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1F2937;
+}
+
+.subtitle {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.875rem;
+  color: #6B7280;
+}
+
+.headerBadges {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.territoryBadge {
+  display: inline-flex;
+  align-items: center;
+  background: #FEF3C7;
+  color: #92400E;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.statusActive {
+  background: #D1FAE5;
+  color: #059669;
+}
+
+.statusCompleted {
+  background: #E0E7FF;
+  color: #4F46E5;
+}
+
+.exportButton {
+  background: #10B981;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.exportButton:hover {
+  background: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+}
+
+.exportButton:active {
+  transform: translateY(0);
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.statBox {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #F9FAFB;
+  padding: 0.875rem;
+  border-radius: 0.75rem;
+  border: 1px solid #E5E7EB;
+}
+
+.statIcon {
+  font-size: 1.5rem;
+  background: white;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.statContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.statLabel {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.statValue {
+  margin: 0.125rem 0 0 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1F2937;
+}
+
+.mapWrapper {
+  flex: 1;
+  min-height: 400px;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #6B7280;
+}
+
+.spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 3px solid #E5E7EB;
+  border-top-color: #10B981;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: #F9FAFB;
+  border-radius: 0.75rem;
+  border: 2px dashed #E5E7EB;
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.emptyText {
+  color: #6B7280;
+  margin: 0;
+}

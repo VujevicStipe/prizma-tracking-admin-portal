@@ -1,0 +1,53 @@
+.mapContainer {
+  height: 600px;
+  width: 100%;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  background: #F9FAFB;
+  border-radius: 1rem;
+  border: 2px dashed #E5E7EB;
+}
+
+.emptyIcon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.emptyText {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1F2937;
+  margin: 0 0 0.5rem 0;
+}
+
+.emptySubtext {
+  color: #6B7280;
+  margin: 0;
+}
+
+.popup {
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.popup strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #1F2937;
+}
+
+.popupInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: #6B7280;
+}
