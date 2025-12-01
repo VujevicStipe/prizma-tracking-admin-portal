@@ -35,6 +35,7 @@ const POLLING_INTERVAL = 10000; // 10 sekundi
 function LiveMap({ sessions }: LiveMapProps) {
   const [sessionsWithLocations, setSessionsWithLocations] = useState<SessionWithLocations[]>([]);
   const [territories, setTerritories] = useState<Map<string, Territory>>(new Map());
+  const [loading, setLoading] = useState(true);
   const pollingIntervalRef = useRef<number | null>(null);
   const lastTimestampsRef = useRef<Map<string, number>>(new Map());
 
@@ -73,16 +74,24 @@ function LiveMap({ sessions }: LiveMapProps) {
   useEffect(() => {
     if (sessions.length === 0) {
       setSessionsWithLocations([]);
+      setLoading(false);
       return;
     }
 
+    setLoading(true);
     console.log('🔄 LiveMap: Loading sessions with optimized caching...');
 
-    loadAllSessions();
+    const initializeAndPoll = async () => {
+      await loadAllSessions();
+      
+      await loadNewPointsOnly();
+      
+      pollingIntervalRef.current = setInterval(() => {
+        loadNewPointsOnly();
+      }, POLLING_INTERVAL);
+    };
 
-    pollingIntervalRef.current = setInterval(() => {
-      loadNewPointsOnly();
-    }, POLLING_INTERVAL);
+    initializeAndPoll();
 
     return () => {
       if (pollingIntervalRef.current) {
@@ -149,6 +158,7 @@ function LiveMap({ sessions }: LiveMapProps) {
     }
 
     setSessionsWithLocations(results);
+    setLoading(false);
   };
 
   const loadNewPointsOnly = async () => {
@@ -206,6 +216,15 @@ function LiveMap({ sessions }: LiveMapProps) {
   const center: [number, number] = sessionsWithLocations.length > 0 && sessionsWithLocations[0].lastLocation
     ? [sessionsWithLocations[0].lastLocation.latitude, sessionsWithLocations[0].lastLocation.longitude]
     : [43.5081, 16.4402];
+
+  if (loading) {
+    return (
+      <div className={styles.emptyState}>
+        <div className={styles.spinner}></div>
+        <p>Učitavam podatke...</p>
+      </div>
+    );
+  }
 
   if (sessions.length === 0) {
     return (
