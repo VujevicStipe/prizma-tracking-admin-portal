@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, Polygon } from 'react-leaflet';
-import { collection, query, orderBy, onSnapshot, doc, getDoc } from 'firebase/firestore';
+import { collection, query, where, orderBy, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import type { Session, LocationPoint, Territory } from '../../types';
+import { cacheService } from '../../utils/cacheService';
 import 'leaflet/dist/leaflet.css';
 import styles from './LiveMap.module.css';
 
@@ -29,9 +30,13 @@ interface SessionWithLocations {
   lastLocation: LocationPoint | null;
 }
 
+const POLLING_INTERVAL = 10000; // 10 sekundi
+
 function LiveMap({ sessions }: LiveMapProps) {
   const [sessionsWithLocations, setSessionsWithLocations] = useState<SessionWithLocations[]>([]);
   const [territories, setTerritories] = useState<Map<string, Territory>>(new Map());
+  const pollingIntervalRef = useRef<number | null>(null);
+  const lastTimestampsRef = useRef<Map<string, number>>(new Map());
 
   useEffect(() => {
     if (sessionsWithLocations.length === 0) return;
@@ -71,21 +76,51 @@ function LiveMap({ sessions }: LiveMapProps) {
       return;
     }
 
-    const unsubscribers: (() => void)[] = [];
+    console.log('🔄 LiveMap: Loading sessions with optimized caching...');
 
-    sessions.forEach(session => {
-      // Pokušaj sortirati po timestampMs prvo, fallback na timestamp
-      const locationsQuery = query(
-        collection(db, 'locations', session.id, 'points'),
-        orderBy('timestampMs', 'asc')
-      );
+    loadAllSessions();
 
-      const unsubscribe = onSnapshot(
-        locationsQuery, 
-        (snapshot) => {
-          const locations = snapshot.docs.map(doc => doc.data()) as LocationPoint[];
+    pollingIntervalRef.current = setInterval(() => {
+      loadNewPointsOnly();
+    }, POLLING_INTERVAL);
+
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+      }
+    };
+  }, [sessions]);
+
+  const loadAllSessions = async () => {
+    const results: SessionWithLocations[] = [];
+
+    for (const session of sessions) {
+      try {
+        const cached = cacheService.loadSessionPoints(session.id);
+        
+        if (cached) {
+          console.log(`💾 Using ${cached.points.length} cached points for ${session.workerName}`);
           
-          // Double-check sorting na klijentu (backup)
+          results.push({
+            session,
+            locations: cached.points,
+            lastLocation: cached.points.length > 0 ? cached.points[cached.points.length - 1] : null,
+          });
+
+          lastTimestampsRef.current.set(session.id, cached.lastTimestamp);
+
+          loadNewPointsForSession(session.id, cached.lastTimestamp);
+        } else {
+          console.log(`📥 Loading all points from Firestore for ${session.workerName}`);
+          
+          const locationsQuery = query(
+            collection(db, 'locations', session.id, 'points'),
+            orderBy('timestampMs', 'asc')
+          );
+          
+          const snapshot = await getDocs(locationsQuery);
+          let locations = snapshot.docs.map(doc => doc.data()) as LocationPoint[];
+          
           locations.sort((a, b) => {
             const timeA = a.timestampMs || 
               (a.timestamp instanceof Date ? a.timestamp.getTime() : (a.timestamp as any)?.toMillis?.()) || 0;
@@ -93,58 +128,80 @@ function LiveMap({ sessions }: LiveMapProps) {
               (b.timestamp instanceof Date ? b.timestamp.getTime() : (b.timestamp as any)?.toMillis?.()) || 0;
             return timeA - timeB;
           });
-          
-          console.log(`📍 LiveMap: ${session.workerName} - ${locations.length} points`);
-          
-          setSessionsWithLocations(prev => {
-            const filtered = prev.filter(s => s.session.id !== session.id);
-            return [
-              ...filtered,
-              {
-                session,
-                locations: locations,
-                lastLocation: locations.length > 0 ? locations[locations.length - 1] : null
-              }
-            ];
+
+          console.log(`✅ Loaded ${locations.length} points for ${session.workerName}`);
+
+          if (locations.length > 0) {
+            cacheService.saveSessionPoints(session.id, locations);
+            const lastTimestamp = locations[locations.length - 1].timestampMs || Date.now();
+            lastTimestampsRef.current.set(session.id, lastTimestamp);
+          }
+
+          results.push({
+            session,
+            locations,
+            lastLocation: locations.length > 0 ? locations[locations.length - 1] : null,
           });
-        },
-        (error) => {
-          console.error('❌ LiveMap snapshot error:', error);
-          
-          // Fallback na timestamp ako timestampMs ne postoji
-          const fallbackQuery = query(
-            collection(db, 'locations', session.id, 'points'),
-            orderBy('timestamp', 'asc')
-          );
-          
-          const fallbackUnsub = onSnapshot(fallbackQuery, (snapshot) => {
-            const locations = snapshot.docs.map(doc => doc.data()) as LocationPoint[];
-            console.log(`📍 LiveMap (fallback): ${session.workerName} - ${locations.length} points`);
-            
-            setSessionsWithLocations(prev => {
-              const filtered = prev.filter(s => s.session.id !== session.id);
-              return [
-                ...filtered,
-                {
-                  session,
-                  locations: locations,
-                  lastLocation: locations.length > 0 ? locations[locations.length - 1] : null
-                }
-              ];
-            });
-          });
-          
-          unsubscribers.push(fallbackUnsub);
         }
+      } catch (error) {
+        console.error(`❌ Error loading session ${session.id}:`, error);
+      }
+    }
+
+    setSessionsWithLocations(results);
+  };
+
+  const loadNewPointsOnly = async () => {
+    console.log('🔄 Polling for new points...');
+
+    for (const session of sessions) {
+      const lastTimestamp = lastTimestampsRef.current.get(session.id) || 0;
+      await loadNewPointsForSession(session.id, lastTimestamp);
+    }
+  };
+
+  const loadNewPointsForSession = async (sessionId: string, lastTimestamp: number) => {
+    try {
+      const newPointsQuery = query(
+        collection(db, 'locations', sessionId, 'points'),
+        where('timestampMs', '>', lastTimestamp),
+        orderBy('timestampMs', 'asc')
       );
 
-      unsubscribers.push(unsubscribe);
-    });
+      const snapshot = await getDocs(newPointsQuery);
+      
+      if (snapshot.empty) {
+        return;
+      }
 
-    return () => {
-      unsubscribers.forEach(unsub => unsub());
-    };
-  }, [sessions]);
+      const newPoints = snapshot.docs.map(doc => doc.data()) as LocationPoint[];
+      
+      console.log(`📍 Found ${newPoints.length} new points for session ${sessionId}`);
+
+      cacheService.appendPoints(sessionId, newPoints);
+
+      setSessionsWithLocations(prev => {
+        const updated = prev.map(item => {
+          if (item.session.id !== sessionId) return item;
+
+          const allLocations = [...item.locations, ...newPoints];
+          const newLastTimestamp = newPoints[newPoints.length - 1].timestampMs || Date.now();
+          
+          lastTimestampsRef.current.set(sessionId, newLastTimestamp);
+
+          return {
+            session: item.session,
+            locations: allLocations,
+            lastLocation: allLocations[allLocations.length - 1],
+          };
+        });
+
+        return updated;
+      });
+    } catch (error) {
+      console.error(`❌ Error loading new points for ${sessionId}:`, error);
+    }
+  };
 
   const center: [number, number] = sessionsWithLocations.length > 0 && sessionsWithLocations[0].lastLocation
     ? [sessionsWithLocations[0].lastLocation.latitude, sessionsWithLocations[0].lastLocation.longitude]
@@ -226,6 +283,21 @@ function LiveMap({ sessions }: LiveMapProps) {
           );
         })}
       </MapContainer>
+      
+      {/* Debug info - ukloni u produkciji */}
+      <div style={{ 
+        position: 'absolute', 
+        bottom: '10px', 
+        right: '10px', 
+        background: 'rgba(0,0,0,0.7)', 
+        color: 'white', 
+        padding: '8px 12px', 
+        borderRadius: '6px',
+        fontSize: '12px',
+        zIndex: 1000
+      }}>
+        💾 Cache Stats: {cacheService.getCacheStats().totalSessions} sessions, {cacheService.getCacheStats().totalPoints} points
+      </div>
     </div>
   );
 }
