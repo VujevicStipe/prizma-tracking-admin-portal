@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, Polygon } from 'react-leaflet';
 import { collection, query, where, orderBy, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../config/firebase';
@@ -82,9 +82,9 @@ function LiveMap({ sessions }: LiveMapProps) {
     console.log('🔄 LiveMap: Loading sessions with optimized caching...');
 
     const initializeAndPoll = async () => {
-      await loadAllSessions();
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
-      await loadNewPointsOnly();
+      await loadAllSessions();
       
       pollingIntervalRef.current = setInterval(() => {
         loadNewPointsOnly();
