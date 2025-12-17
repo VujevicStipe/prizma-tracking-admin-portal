@@ -1,92 +1,55 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
   height: 100%;
-}
-
-.loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 400px;
-}
-
-.spinner {
-  width: 3rem;
-  height: 3rem;
-  border: 3px solid #E5E7EB;
-  border-top-color: #10B981;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 1rem;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.emptyState {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 400px;
-  background: #F9FAFB;
-  border-radius: 1rem;
-}
-
-.emptyIcon {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-}
-
-.emptyText {
-  color: #6B7280;
-  font-size: 1.25rem;
-  margin: 0;
+  gap: 1rem;
+  overflow-y: auto;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  flex-wrap: wrap;
-  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #E5E7EB;
+  flex-shrink: 0;
 }
 
 .title {
-  margin: 0 0 0.25rem 0;
-  font-size: 1.5rem;
+  margin: 0;
+  font-size: 1.25rem;
   font-weight: 700;
   color: #1F2937;
 }
 
 .subtitle {
-  margin: 0;
+  margin: 0.25rem 0 0 0;
   font-size: 0.875rem;
   color: #6B7280;
 }
 
 .headerBadges {
   display: flex;
-  gap: 0.75rem;
-  align-items: center;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-end;
 }
 
 .territoryBadge {
+  display: inline-flex;
+  align-items: center;
   background: #FEF3C7;
   color: #92400E;
-  padding: 0.5rem 1rem;
+  padding: 0.375rem 0.75rem;
   border-radius: 0.5rem;
   font-size: 0.875rem;
   font-weight: 600;
 }
 
 .statusBadge {
-  padding: 0.5rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.75rem;
   border-radius: 0.5rem;
   font-size: 0.875rem;
   font-weight: 600;
@@ -105,194 +68,124 @@
 .exportButton {
   background: #10B981;
   color: white;
+  border: none;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
-  border: none;
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
 }
 
 .exportButton:hover {
   background: #059669;
-  transform: translateY(-2px);
+  transform: translateY(-1px);
   box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+}
+
+.exportButton:active {
+  transform: translateY(0);
 }
 
 .statsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.75rem;
+  flex-shrink: 0;
 }
 
 .statBox {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   background: #F9FAFB;
-  padding: 1rem;
+  padding: 0.875rem;
   border-radius: 0.75rem;
   border: 1px solid #E5E7EB;
 }
 
 .statIcon {
   font-size: 1.5rem;
-  margin-bottom: 0.5rem;
+  background: white;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .statContent {
-  display: flex;
-  flex-direction: column;
+  flex: 1;
+  min-width: 0;
 }
 
 .statLabel {
-  font-size: 0.875rem;
+  margin: 0;
+  font-size: 0.75rem;
   color: #6B7280;
-  margin: 0 0 0.25rem 0;
+  font-weight: 500;
 }
 
 .statValue {
-  font-size: 1.5rem;
+  margin: 0.125rem 0 0 0;
+  font-size: 1rem;
   font-weight: 700;
-  color: #10B981;
-  margin: 0;
+  color: #1F2937;
 }
 
 .mapWrapper {
   flex: 1;
-  min-height: 500px;
+  min-height: 400px;
   border-radius: 0.75rem;
   overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.speedLegend {
-  background: white;
-  padding: 1rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.legendTitle {
-  margin: 0 0 0.75rem 0;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #1F2937;
-}
-
-.legendItem {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.legendColor {
-  width: 20px;
-  height: 20px;
-  border-radius: 4px;
   flex-shrink: 0;
 }
 
-.legendLabel {
-  font-size: 0.875rem;
-  color: #4B5563;
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #6B7280;
 }
 
-@media (min-width: 1440px) {
-  .container {
-    gap: 2rem;
-  }
-  
-  .mapWrapper {
-    min-height: 650px;
-  }
-  
-  .statsGrid {
-    grid-template-columns: repeat(6, 1fr);
-    gap: 1.25rem;
-  }
-  
-  .title {
-    font-size: 1.75rem;
-  }
+.spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 3px solid #E5E7EB;
+  border-top-color: #10B981;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
 }
 
-@media (min-width: 1024px) and (max-width: 1439px) {
-  .mapWrapper {
-    min-height: 550px;
-  }
-  
-  .statsGrid {
-    grid-template-columns: repeat(3, 1fr);
-  }
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
-@media (min-width: 768px) and (max-width: 1023px) {
-  .mapWrapper {
-    min-height: 450px;
-  }
-  
-  .statsGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .header {
-    flex-direction: column;
-  }
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: #F9FAFB;
+  border-radius: 0.75rem;
+  border: 2px dashed #E5E7EB;
 }
 
-@media (max-width: 767px) {
-  .container {
-    gap: 1rem;
-  }
-  
-  .mapWrapper {
-    min-height: 350px;
-  }
-  
-  .statsGrid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
-  }
-  
-  .statBox {
-    padding: 0.75rem;
-  }
-  
-  .statIcon {
-    font-size: 1.25rem;
-  }
-  
-  .statValue {
-    font-size: 1.25rem;
-  }
-  
-  .title {
-    font-size: 1.25rem;
-  }
-  
-  .headerBadges {
-    width: 100%;
-  }
-  
-  .exportButton {
-    flex: 1;
-  }
+.emptyIcon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
 }
 
-@media (max-width: 480px) {
-  .statsGrid {
-    grid-template-columns: 1fr 1fr;
-  }
-  
-  .mapWrapper {
-    min-height: 300px;
-  }
-  
-  .speedLegend {
-    padding: 0.75rem;
-  }
-  
-  .legendLabel {
-    font-size: 0.8125rem;
-  }
+.emptyText {
+  color: #6B7280;
+  margin: 0;
 }
