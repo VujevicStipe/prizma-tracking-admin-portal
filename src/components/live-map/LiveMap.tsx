@@ -4,6 +4,7 @@ import { collection, query, where, orderBy, getDocs, doc, getDoc } from 'firebas
 import { db } from '../../config/firebase';
 import type { Session, LocationPoint, Territory } from '../../types';
 import { cacheService } from '../../utils/cacheService';
+import { createSpeedSegments } from '../../utils/speedColors';
 import 'leaflet/dist/leaflet.css';
 import styles from './LiveMap.module.css';
 
@@ -30,7 +31,7 @@ interface SessionWithLocations {
   lastLocation: LocationPoint | null;
 }
 
-const POLLING_INTERVAL = 10000; // 10 sekundi
+const POLLING_INTERVAL = 10000; 
 
 function LiveMap({ sessions }: LiveMapProps) {
   const [sessionsWithLocations, setSessionsWithLocations] = useState<SessionWithLocations[]>([]);
@@ -275,11 +276,19 @@ function LiveMap({ sessions }: LiveMapProps) {
               )}
 
               {locations.length > 1 && (
-                <Polyline
-                  positions={locations.map(loc => [loc.latitude, loc.longitude])}
-                  color="#EF4444"
-                  weight={4}
-                />
+                <>
+                  {createSpeedSegments(locations).map((segment, index) => (
+                    <Polyline
+                      key={`${session.id}-segment-${index}`}
+                      positions={segment.positions}
+                      pathOptions={{
+                        color: segment.color,
+                        weight: 4,
+                        opacity: 0.8
+                      }}
+                    />
+                  ))}
+                </>
               )}
 
               {lastLocation && (
@@ -301,7 +310,7 @@ function LiveMap({ sessions }: LiveMapProps) {
         })}
       </MapContainer>
       
-      {/* Debug info */}
+      {/* Debug info - ukloni u produkciji */}
       <div style={{ 
         position: 'absolute', 
         bottom: '10px', 

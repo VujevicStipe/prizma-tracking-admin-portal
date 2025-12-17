@@ -5,6 +5,7 @@ import { db } from '../../config/firebase';
 import type { Session, LocationPoint, Territory } from '../../types';
 import { calculateSessionStats, formatDistance, formatSpeed } from '../../utils/statistics';
 import { generateSessionPDF } from '../../utils/pdfExport';
+import { createSpeedSegments, getSpeedLegend } from '../../utils/speedColors';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import styles from './SessionMap.module.css';
@@ -27,7 +28,6 @@ function SessionMap({ session }: SessionMapProps) {
     setLoading(true);
     
     try {
-      // Pokušaj sortirati po timestampMs (novi field), fallback na timestamp
       const locationsQuery = query(
         collection(db, 'locations', session.id, 'points'),
         orderBy('timestampMs', 'asc')
@@ -36,7 +36,6 @@ function SessionMap({ session }: SessionMapProps) {
       const locationsSnapshot = await getDocs(locationsQuery);
       let locs = locationsSnapshot.docs.map(doc => doc.data()) as LocationPoint[];
       
-      // Double-check: Dodatno sortiraj na klijent strani (za sigurnost)
       locs = locs.sort((a, b) => {
         const timeA = a.timestampMs || 
           (a.timestamp instanceof Date ? a.timestamp.getTime() : (a.timestamp as any)?.toMillis?.()) || 0;
@@ -45,7 +44,7 @@ function SessionMap({ session }: SessionMapProps) {
         return timeA - timeB;
       });
       
-      console.log(`📍 Loaded ${locs.length} points for session ${session.id}`);
+      console.log(`Loaded ${locs.length} points for session ${session.id}`);
       
       setLocations(locs);
 
@@ -58,7 +57,6 @@ function SessionMap({ session }: SessionMapProps) {
     } catch (error) {
       console.error('Error loading session data:', error);
       
-      // Fallback: Pokušaj bez timestampMs fielda (za stare sesije)
       try {
         const locationsQuery = query(
           collection(db, 'locations', session.id, 'points'),
@@ -68,7 +66,7 @@ function SessionMap({ session }: SessionMapProps) {
         const locationsSnapshot = await getDocs(locationsQuery);
         const locs = locationsSnapshot.docs.map(doc => doc.data()) as LocationPoint[];
         
-        console.log(`📍 Loaded ${locs.length} points (fallback) for session ${session.id}`);
+        console.log(`Loaded ${locs.length} points (fallback) for session ${session.id}`);
         
         setLocations(locs);
       } catch (fallbackError) {
@@ -164,6 +162,9 @@ function SessionMap({ session }: SessionMapProps) {
     session.endTime?.toDate() || null
   );
 
+  const speedSegments = createSpeedSegments(locations);
+  const speedLegend = getSpeedLegend();
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -244,6 +245,19 @@ function SessionMap({ session }: SessionMapProps) {
         )}
       </div>
 
+      <div className={styles.speedLegend}>
+        <h4 className={styles.legendTitle}>Brzina:</h4>
+        {speedLegend.map((item) => (
+          <div key={item.range} className={styles.legendItem}>
+            <div 
+              className={styles.legendColor} 
+              style={{ backgroundColor: item.color }}
+            />
+            <span className={styles.legendLabel}>{item.label}</span>
+          </div>
+        ))}
+      </div>
+
       <div ref={mapContainerRef} className={styles.mapWrapper}>
         <MapContainer
           center={center}
@@ -267,13 +281,17 @@ function SessionMap({ session }: SessionMapProps) {
             />
           )}
 
-          <Polyline
-            positions={locations.map(loc => [loc.latitude, loc.longitude])}
-            pathOptions={{
-              color: '#EF4444',
-              weight: 4
-            }}
-          />
+          {speedSegments.map((segment, index) => (
+            <Polyline
+              key={index}
+              positions={segment.positions}
+              pathOptions={{
+                color: segment.color,
+                weight: 4,
+                opacity: 0.8
+              }}
+            />
+          ))}
 
           <Marker position={[locations[0].latitude, locations[0].longitude]} />
 
