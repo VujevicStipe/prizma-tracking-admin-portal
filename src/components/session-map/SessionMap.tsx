@@ -245,15 +245,35 @@ function SessionMap({ session }: SessionMapProps) {
         )}
       </div>
 
-      <div className={styles.speedLegend}>
-        <h4 className={styles.legendTitle}>Brzina:</h4>
+      <div className={styles.speedLegend} style={{
+        backgroundColor: 'white',
+        padding: '12px 16px',
+        borderRadius: '8px',
+        marginBottom: '16px',
+        marginLeft: '24px',
+        marginRight: '24px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+      }}>
+        <h4 className={styles.legendTitle} style={{ 
+          fontSize: '16px', 
+          fontWeight: '600', 
+          marginBottom: '12px',
+          color: '#1F2937'
+        }}>Brzina:</h4>
         {speedLegend.map((item) => (
-          <div key={item.range} className={styles.legendItem}>
+          <div key={item.range} className={styles.legendItem} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
             <div 
               className={styles.legendColor} 
-              style={{ backgroundColor: item.color }}
+              style={{ 
+                backgroundColor: item.color,
+                width: '20px',
+                height: '20px',
+                borderRadius: '4px',
+                border: '2px solid rgba(0,0,0,0.2)',
+                flexShrink: 0
+              }}
             />
-            <span className={styles.legendLabel}>{item.label}</span>
+            <span className={styles.legendLabel} style={{ fontSize: '14px', color: '#4B5563' }}>{item.label}</span>
           </div>
         ))}
       </div>
