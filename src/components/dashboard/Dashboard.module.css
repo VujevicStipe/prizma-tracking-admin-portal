@@ -246,6 +246,15 @@
   padding: 1rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.mapWrapper {
+  flex: 1;
+  min-height: 500px;
+  border-radius: 0.75rem;
+  overflow: hidden;
 }
 
 .mapPlaceholder {
@@ -272,23 +281,39 @@
 
 @media (min-width: 1440px) {
   .historyGrid {
-    grid-template-columns: 450px 1fr;
+    grid-template-columns: 420px 1fr;
+    height: 800px;
+  }
+  
+  .statsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .content {
+    min-height: 700px;
+  }
+  
+  .mapWrapper {
+    height: 750px;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .historyGrid {
+    grid-template-columns: 380px 1fr;
     height: 700px;
   }
   
   .statsGrid {
     grid-template-columns: repeat(3, 1fr);
   }
-}
-
-@media (min-width: 1024px) and (max-width: 1439px) {
-  .historyGrid {
-    grid-template-columns: 350px 1fr;
-    height: 600px;
+  
+  .content {
+    min-height: 650px;
   }
   
-  .statsGrid {
-    grid-template-columns: repeat(3, 1fr);
+  .mapWrapper {
+    height: 650px;
   }
 }
 
