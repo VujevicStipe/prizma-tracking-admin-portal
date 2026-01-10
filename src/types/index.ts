@@ -30,6 +30,7 @@ export interface Session {
   totalDistance: number;
   averageSpeed: number;
   pointsCount: number;
+  lastLocationUpdate?: any;
 }
 
 export interface LocationPoint {
