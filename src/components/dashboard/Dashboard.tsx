@@ -131,8 +131,20 @@ function Dashboard() {
             <div>
               <p className={styles.statLabel}>Završene Danas</p>
               <p className={styles.statValue}>
-                {allSessions.filter(s => s.status === 'completed').length}
-              </p>
+              {allSessions.filter(s => {
+                if (s.status !== 'completed') return false;
+                
+                const sessionEndDate = s.endTime?.toDate?.();
+                if (!sessionEndDate) return false;
+                
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const tomorrow = new Date(today);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                
+                return sessionEndDate >= today && sessionEndDate < tomorrow;
+              }).length}
+            </p>
             </div>
             <div className={styles.statIcon}>✅</div>
           </div>
