@@ -6,7 +6,8 @@ import SessionMap from '../session-map/SessionMap';
 import type { Session, FilterState } from '../../types';
 import Filters from '../filters/Filters';
 import styles from './Dashboard.module.css';
-import BottomSheet from '../bottom-sheet/BottomSheet';
+import { BottomSheet } from 'react-spring-bottom-sheet';
+import 'react-spring-bottom-sheet/dist/style.css';
 
 function Dashboard() {
   const [activeSessions, setActiveSessions] = useState<Session[]>([]);
@@ -304,12 +305,28 @@ function Dashboard() {
         )}
       </div>
       
-      <BottomSheet 
-        isOpen={isBottomSheetOpen} 
-        onClose={() => {
+      <BottomSheet
+        open={isBottomSheetOpen}
+        onDismiss={() => {
           setIsBottomSheetOpen(false);
           setSelectedSession(null);
         }}
+        defaultSnap={({ maxHeight }) => maxHeight * 0.85}
+        snapPoints={({ maxHeight }) => [
+          maxHeight * 0.6,
+          maxHeight * 0.85,
+          maxHeight - 64
+        ]}
+        header={
+          <div style={{ 
+            padding: '16px', 
+            borderBottom: '1px solid #E5E7EB',
+            fontWeight: 600,
+            fontSize: '18px'
+          }}>
+            {selectedSession?.workerName || 'Sesija'}
+          </div>
+        }
       >
         {selectedSession && <SessionMap session={selectedSession} />}
       </BottomSheet>

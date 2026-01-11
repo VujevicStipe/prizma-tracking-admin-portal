@@ -254,10 +254,6 @@
   .mapColumn {
     display: none;
   }
-  
-  .historyGrid {
-    grid-template-columns: 1fr;
-  }
 }
 
 .mapWrapper {
@@ -334,11 +330,11 @@
   }
   
   .sessionListColumn {
-    max-height: 350px;
+    max-height: 600px;
   }
   
   .mapColumn {
-    min-height: 450px;
+    display: none;
   }
   
   .statsGrid {
@@ -404,7 +400,7 @@
   }
   
   .sessionListColumn {
-    max-height: 300px;
+    max-height: 500px;
   }
   
   .sessionsList {
@@ -424,8 +420,7 @@
   }
   
   .mapColumn {
-    min-height: 400px;
-    padding: 0.75rem;
+    display: none;
   }
   
   .placeholderIcon {
@@ -451,10 +446,10 @@
   }
   
   .sessionListColumn {
-    max-height: 250px;
+    max-height: 450px;
   }
   
   .mapColumn {
-    min-height: 350px;
+    display: none; 
   }
 }
