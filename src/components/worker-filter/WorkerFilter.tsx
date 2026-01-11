@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { Session } from '../../types';
-import styles from './Filters.module.css';
+import styles from '../filters/Filters.module.css';
 
 interface WorkerFilterProps {
   sessions: Session[];
