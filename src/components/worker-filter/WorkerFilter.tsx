@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import type { Session } from '../../types';
-import styles from './WorkerFilter.module.css';
+import styles from '../filters/Filters.module.css'; 
 
 interface WorkerFilterProps {
   sessions: Session[];
@@ -9,24 +9,11 @@ interface WorkerFilterProps {
 }
 
 function WorkerFilter({ sessions, selectedWorkerIds, onFilterChange }: WorkerFilterProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [expanded, setExpanded] = useState(false);
 
-  // Unique workers
   const uniqueWorkers = Array.from(
     new Map(sessions.map(s => [s.workerId, { id: s.workerId, name: s.workerName }])).values()
   );
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   const toggleWorker = (workerId: string) => {
     if (selectedWorkerIds.includes(workerId)) {
@@ -36,53 +23,99 @@ function WorkerFilter({ sessions, selectedWorkerIds, onFilterChange }: WorkerFil
     }
   };
 
-  const selectAll = () => {
-    onFilterChange(uniqueWorkers.map(w => w.id));
-  };
+  const selectAll = () => onFilterChange(uniqueWorkers.map(w => w.id));
+  const clearAll = () => onFilterChange([]);
 
-  const clearAll = () => {
-    onFilterChange([]);
-  };
-
-  const selectedCount = selectedWorkerIds.length;
-  const totalCount = uniqueWorkers.length;
+  const hasActiveFilters = selectedWorkerIds.length > 0 && selectedWorkerIds.length < uniqueWorkers.length;
 
   return (
-    <div className={styles.container} ref={dropdownRef}>
-      <button 
-        className={styles.trigger}
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <span className={styles.triggerText}>
-          👷 Radnici {selectedCount > 0 && `(${selectedCount}/${totalCount})`}
-        </span>
-        <span className={styles.triggerIcon}>{isOpen ? '▲' : '▼'}</span>
-      </button>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <button 
+          className={styles.toggleButton}
+          onClick={() => setExpanded(!expanded)}>
+          <span className={styles.toggleIcon}>
+            {expanded ? '🔽' : '▶️'}
+          </span>
+          <span className={styles.toggleText}>
+            👷 Radnici {selectedWorkerIds.length > 0 && `(${selectedWorkerIds.length}/${uniqueWorkers.length})`}
+          </span>
+          {hasActiveFilters && !expanded && (
+            <span className={styles.activeIndicator}>•</span>
+          )}
+        </button>
+        
+        {hasActiveFilters && (
+          <button className={styles.resetButton} onClick={selectAll}>
+            Odaberi sve
+          </button>
+        )}
+      </div>
 
-      {isOpen && (
-        <div className={styles.dropdown}>
-          <div className={styles.dropdownHeader}>
-            <button onClick={selectAll} className={styles.headerButton}>
+      {expanded && (
+        <div className={styles.filtersGrid}>
+          <div style={{ display: 'flex', gap: '8px', gridColumn: '1 / -1' }}>
+            <button 
+              onClick={selectAll}
+              style={{
+                flex: 1,
+                padding: '8px 16px',
+                background: '#F3F4F6',
+                border: 'none',
+                borderRadius: '8px',
+                fontWeight: 600,
+                fontSize: '14px',
+                cursor: 'pointer'
+              }}>
               Odaberi sve
             </button>
-            <button onClick={clearAll} className={styles.headerButton}>
+            <button 
+              onClick={clearAll}
+              style={{
+                flex: 1,
+                padding: '8px 16px',
+                background: '#F3F4F6',
+                border: 'none',
+                borderRadius: '8px',
+                fontWeight: 600,
+                fontSize: '14px',
+                cursor: 'pointer'
+              }}>
               Poništi
             </button>
           </div>
 
-          <div className={styles.workerList}>
-            {uniqueWorkers.map(worker => (
-              <label key={worker.id} className={styles.workerItem}>
-                <input
-                  type="checkbox"
-                  checked={selectedWorkerIds.includes(worker.id)}
-                  onChange={() => toggleWorker(worker.id)}
-                  className={styles.checkbox}
-                />
-                <span className={styles.workerName}>{worker.name}</span>
-              </label>
-            ))}
-          </div>
+          {uniqueWorkers.map(worker => (
+            <label 
+              key={worker.id}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                padding: '10px 12px',
+                background: '#F9FAFB',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                border: '2px solid',
+                borderColor: selectedWorkerIds.includes(worker.id) ? '#10B981' : '#E5E7EB',
+                transition: 'all 0.2s'
+              }}>
+              <input
+                type="checkbox"
+                checked={selectedWorkerIds.includes(worker.id)}
+                onChange={() => toggleWorker(worker.id)}
+                style={{ 
+                  width: '18px', 
+                  height: '18px',
+                  cursor: 'pointer',
+                  accentColor: '#10B981'
+                }}
+              />
+              <span style={{ fontSize: '14px', fontWeight: 500, color: '#1F2937' }}>
+                {worker.name}
+              </span>
+            </label>
+          ))}
         </div>
       )}
     </div>
