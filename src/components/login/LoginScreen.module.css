@@ -1,12 +1,23 @@
 .container {
   min-height: 100vh;
-  max-height: 100vh; 
-  overflow: hidden; 
   display: flex;
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #10B981 0%, #059669 100%);
   padding: 0 20px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    min-height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
 }
 
 .card {
