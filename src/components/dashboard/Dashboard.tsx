@@ -242,13 +242,11 @@ function Dashboard() {
       )}
 
       {viewMode === 'live' && (
-        <div className={styles.liveFilterBar}>
-          <WorkerFilter 
-            sessions={activeSessions}
-            selectedWorkerIds={selectedWorkerIds}
-            onFilterChange={setSelectedWorkerIds}
-          />
-        </div>
+        <WorkerFilter 
+          sessions={activeSessions}
+          selectedWorkerIds={selectedWorkerIds}
+          onFilterChange={setSelectedWorkerIds}
+        />
       )}
 
       <div className={styles.content}>
