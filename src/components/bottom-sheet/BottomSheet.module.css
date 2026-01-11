@@ -6,16 +6,12 @@
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
   z-index: 1000;
-  animation: fadeIn 0.3s ease;
+  animation: fadeIn 0.25s ease;
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .sheet {
@@ -24,23 +20,30 @@
   left: 0;
   right: 0;
   background: white;
-  border-radius: 24px 24px 0 0;
+  border-radius: 20px 20px 0 0;
   max-height: 90vh;
-  height: 90vh;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
-  animation: slideUp 0.3s ease;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.3s cubic-bezier(0.32, 0.72, 0, 1);
   transition: transform 0.2s ease;
 }
 
 @keyframes slideUp {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.handleArea {
+  padding: 12px 0;
+  cursor: grab;
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.handleArea:active {
+  cursor: grabbing;
 }
 
 .handle {
@@ -48,8 +51,6 @@
   height: 4px;
   background: #D1D5DB;
   border-radius: 2px;
-  margin: 12px auto 8px;
-  flex-shrink: 0;
 }
 
 .closeButton {
@@ -79,10 +80,10 @@
 .content {
   flex: 1;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   padding: 0 16px 16px;
 }
 
-/* Desktop - ignore bottom sheet */
 @media (min-width: 1024px) {
   .overlay {
     display: none;

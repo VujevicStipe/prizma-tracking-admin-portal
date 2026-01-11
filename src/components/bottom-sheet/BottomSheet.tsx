@@ -10,8 +10,8 @@ interface BottomSheetProps {
 
 function BottomSheet({ isOpen, onClose, children }: BottomSheetProps) {
   const sheetRef = useRef<HTMLDivElement>(null);
+  const handleRef = useRef<HTMLDivElement>(null);
   const startY = useRef<number>(0);
-  const currentY = useRef<number>(0);
 
   useEffect(() => {
     if (isOpen) {
@@ -19,27 +19,33 @@ function BottomSheet({ isOpen, onClose, children }: BottomSheetProps) {
     } else {
       document.body.style.overflow = '';
     }
-
     return () => {
       document.body.style.overflow = '';
     };
   }, [isOpen]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
+    // Only on handle
+    if (!handleRef.current?.contains(e.target as Node)) return;
     startY.current = e.touches[0].clientY;
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    currentY.current = e.touches[0].clientY;
-    const diff = currentY.current - startY.current;
+    if (!handleRef.current?.contains(e.target as Node)) return;
+    
+    const currentY = e.touches[0].clientY;
+    const diff = currentY - startY.current;
     
     if (diff > 0 && sheetRef.current) {
       sheetRef.current.style.transform = `translateY(${diff}px)`;
     }
   };
 
-  const handleTouchEnd = () => {
-    const diff = currentY.current - startY.current;
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!handleRef.current?.contains(e.target as Node)) return;
+    
+    const currentY = e.changedTouches[0].clientY;
+    const diff = currentY - startY.current;
     
     if (diff > 100) {
       onClose();
@@ -62,10 +68,10 @@ function BottomSheet({ isOpen, onClose, children }: BottomSheetProps) {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        <div className={styles.handle} />
-        <button className={styles.closeButton} onClick={onClose}>
-          ✕
-        </button>
+        <div ref={handleRef} className={styles.handleArea}>
+          <div className={styles.handle} />
+        </div>
+        <button className={styles.closeButton} onClick={onClose}>✕</button>
         <div className={styles.content}>
           {children}
         </div>
