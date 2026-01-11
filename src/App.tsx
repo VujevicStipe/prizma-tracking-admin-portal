@@ -1,7 +1,30 @@
-import styles from './App.module.css';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Dashboard from './components/dashboard/Dashboard';
+import LoginScreen from './components/login/LoginScreen';
+import styles from './App.module.css';
 
-function App() {
+function AppContent() {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        fontSize: '18px',
+        color: '#6B7280'
+      }}>
+        Učitavanje...
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <LoginScreen />;
+  }
+
   return (
     <div className={styles.container}>
       <header className={styles.header}>
@@ -15,6 +38,14 @@ function App() {
         <Dashboard />
       </main>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 
