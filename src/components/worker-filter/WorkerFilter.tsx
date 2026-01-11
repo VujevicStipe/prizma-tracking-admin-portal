@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { Session } from '../../types';
-import styles from '../filters/Filters.module.css'; 
+import styles from './Filters.module.css';
 
 interface WorkerFilterProps {
   sessions: Session[];
@@ -54,33 +54,11 @@ function WorkerFilter({ sessions, selectedWorkerIds, onFilterChange }: WorkerFil
 
       {expanded && (
         <div className={styles.filtersGrid}>
-          <div style={{ display: 'flex', gap: '8px', gridColumn: '1 / -1' }}>
-            <button 
-              onClick={selectAll}
-              style={{
-                flex: 1,
-                padding: '8px 16px',
-                background: '#F3F4F6',
-                border: 'none',
-                borderRadius: '8px',
-                fontWeight: 600,
-                fontSize: '14px',
-                cursor: 'pointer'
-              }}>
+          <div className={styles.workerButtons}>
+            <button onClick={selectAll} className={styles.workerButton}>
               Odaberi sve
             </button>
-            <button 
-              onClick={clearAll}
-              style={{
-                flex: 1,
-                padding: '8px 16px',
-                background: '#F3F4F6',
-                border: 'none',
-                borderRadius: '8px',
-                fontWeight: 600,
-                fontSize: '14px',
-                cursor: 'pointer'
-              }}>
+            <button onClick={clearAll} className={styles.workerButton}>
               Poništi
             </button>
           </div>
@@ -88,32 +66,13 @@ function WorkerFilter({ sessions, selectedWorkerIds, onFilterChange }: WorkerFil
           {uniqueWorkers.map(worker => (
             <label 
               key={worker.id}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                padding: '10px 12px',
-                background: '#F9FAFB',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                border: '2px solid',
-                borderColor: selectedWorkerIds.includes(worker.id) ? '#10B981' : '#E5E7EB',
-                transition: 'all 0.2s'
-              }}>
+              className={`${styles.workerCheckbox} ${selectedWorkerIds.includes(worker.id) ? styles.selected : ''}`}>
               <input
                 type="checkbox"
                 checked={selectedWorkerIds.includes(worker.id)}
                 onChange={() => toggleWorker(worker.id)}
-                style={{ 
-                  width: '18px', 
-                  height: '18px',
-                  cursor: 'pointer',
-                  accentColor: '#10B981'
-                }}
               />
-              <span style={{ fontSize: '14px', fontWeight: 500, color: '#1F2937' }}>
-                {worker.name}
-              </span>
+              <span>{worker.name}</span>
             </label>
           ))}
         </div>
