@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, updateDoc, doc } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import LiveMap from '../live-map/LiveMap';
 import SessionMap from '../session-map/SessionMap';
@@ -56,6 +56,69 @@ function Dashboard() {
 
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    const cleanupInterval = setInterval(async () => {
+      const now = new Date();
+      const thresholdTime = new Date(now.getTime() - (30 * 60 * 1000)); 
+      const maxSessionTime = new Date(now.getTime() - (12 * 60 * 60 * 1000)); 
+      
+      for (const session of activeSessions) {
+        let shouldClose = false;
+        let reason = '';
+        
+        if (session.lastLocationUpdate) {
+          const lastUpdate = session.lastLocationUpdate.toDate();
+          if (lastUpdate < thresholdTime) {
+            shouldClose = true;
+            reason = 'No GPS updates for 30+ minutes';
+          }
+        }
+        
+        if (session.startTime) {
+          const startTime = session.startTime.toDate();
+          if (startTime < maxSessionTime) {
+            shouldClose = true;
+            reason = 'Session running for 12+ hours';
+          }
+        }
+        
+        if (session.pointsCount === 0 && session.startTime) {
+          const startTime = session.startTime.toDate();
+          const minutesSinceStart = (now.getTime() - startTime.getTime()) / (1000 * 60);
+          
+          if (minutesSinceStart > 10) {
+            shouldClose = true;
+            reason = 'No GPS points after 10 minutes';
+          }
+        }
+        
+        if (shouldClose) {
+          try {
+            console.log(`Auto-closing session ${session.id}: ${reason}`);
+            
+            await updateDoc(doc(db, 'sessions', session.id), {
+              status: 'auto_completed',
+              endTime: now,
+              autoClosedReason: reason
+            });
+            
+            if (session.workerId) {
+              await updateDoc(doc(db, 'workers', session.workerId), {
+                activeSessionId: null
+              });
+            }
+            
+            console.log(`Session ${session.id} auto-closed successfully`);
+          } catch (error) {
+            console.error('Error auto-closing session:', error);
+          }
+        }
+      }
+    }, 60000); 
+    
+    return () => clearInterval(cleanupInterval);
+  }, [activeSessions]);
 
   const getFilteredSessions = (sessions: Session[]): Session[] => {
     return sessions.filter(session => {
