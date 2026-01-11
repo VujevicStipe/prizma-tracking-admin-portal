@@ -250,6 +250,16 @@
   flex-direction: column;
 }
 
+@media (max-width: 1023px) {
+  .mapColumn {
+    display: none;
+  }
+  
+  .historyGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .mapWrapper {
   flex: 1;
   min-height: 500px;

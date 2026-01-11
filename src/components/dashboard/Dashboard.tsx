@@ -6,6 +6,7 @@ import SessionMap from '../session-map/SessionMap';
 import type { Session, FilterState } from '../../types';
 import Filters from '../filters/Filters';
 import styles from './Dashboard.module.css';
+import BottomSheet from '../bottom-sheet/BottomSheet';
 
 function Dashboard() {
   const [activeSessions, setActiveSessions] = useState<Session[]>([]);
@@ -13,6 +14,7 @@ function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'live' | 'history'>('live');
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
     workerId: '',
     territoryId: '',
@@ -250,7 +252,10 @@ function Dashboard() {
                       className={`${styles.sessionCard} ${
                         selectedSession?.id === session.id ? styles.sessionCardActive : ''
                       }`}
-                      onClick={() => setSelectedSession(session)}>
+                      onClick={() => {setSelectedSession(session); 
+                        if (window.innerWidth < 1024) {
+                          setIsBottomSheetOpen(true);
+                        }}}>
                       <div className={styles.sessionHeader}>
                         <span className={styles.sessionWorker}>
                           {session.workerName}
@@ -298,6 +303,16 @@ function Dashboard() {
           </div>
         )}
       </div>
+      
+      <BottomSheet 
+        isOpen={isBottomSheetOpen} 
+        onClose={() => {
+          setIsBottomSheetOpen(false);
+          setSelectedSession(null);
+        }}
+      >
+        {selectedSession && <SessionMap session={selectedSession} />}
+      </BottomSheet>
     </div>
   );
 }
