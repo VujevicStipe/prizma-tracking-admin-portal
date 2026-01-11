@@ -22,12 +22,14 @@ function AppContent() {
     <div className={styles.container}>
       <header className={styles.header}>
         <div className={styles.headerContent}>
-          <h1 className={styles.title}>📍 Prizma Tracker - Admin Portal</h1>
-          <p className={styles.subtitle}>Live praćenje radnika i terena</p>
+          <div className={styles.headerText}>
+            <h1 className={styles.title}>📍 Prizma Tracker - Admin Portal</h1>
+            <p className={styles.subtitle}>Live praćenje radnika i terena</p>
+          </div>
+          <button onClick={logout} className={styles.logoutButton}>
+            Odjava
+          </button>
         </div>
-        <button onClick={logout} className={styles.logoutButton}>
-          Odjava
-        </button>
       </header>
       
       <main className={styles.main}>
