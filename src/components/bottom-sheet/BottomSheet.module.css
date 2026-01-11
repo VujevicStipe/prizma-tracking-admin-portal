@@ -82,7 +82,7 @@
   flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 0 16px 16px;
+  padding: 2rem 16px 16px;
 }
 
 @media (min-width: 1024px) {
