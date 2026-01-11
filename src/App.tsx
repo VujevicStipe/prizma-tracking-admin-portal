@@ -4,18 +4,11 @@ import LoginScreen from './components/login/LoginScreen';
 import styles from './App.module.css';
 
 function AppContent() {
-  const { user, loading } = useAuth();
+  const { user, loading, logout } = useAuth();
 
   if (loading) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100vh',
-        fontSize: '18px',
-        color: '#6B7280'
-      }}>
+      <div className={styles.loading}>
         Učitavanje...
       </div>
     );
@@ -32,6 +25,9 @@ function AppContent() {
           <h1 className={styles.title}>📍 Prizma Tracker - Admin Portal</h1>
           <p className={styles.subtitle}>Live praćenje radnika i terena</p>
         </div>
+        <button onClick={logout} className={styles.logoutButton}>
+          Odjava
+        </button>
       </header>
       
       <main className={styles.main}>
