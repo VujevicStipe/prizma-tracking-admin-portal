@@ -6,6 +6,7 @@ import SessionMap from '../session-map/SessionMap';
 import type { Session, FilterState } from '../../types';
 import Filters from '../filters/Filters';
 import BottomSheet from '../bottom-sheet/BottomSheet';
+import WorkerFilter from '../worker-filter/WorkerFilter';
 import styles from './Dashboard.module.css';
 
 function Dashboard() {
@@ -15,6 +16,7 @@ function Dashboard() {
   const [viewMode, setViewMode] = useState<'live' | 'history'>('live');
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const [selectedWorkerIds, setSelectedWorkerIds] = useState<string[]>([]);
   const [filters, setFilters] = useState<FilterState>({
     workerId: '',
     territoryId: '',
@@ -168,6 +170,10 @@ function Dashboard() {
 
   const filteredSessions = getFilteredSessions(allSessions);
 
+  const filteredActiveSessions = selectedWorkerIds.length === 0 
+  ? activeSessions 
+  : activeSessions.filter(s => selectedWorkerIds.includes(s.workerId));
+
   return (
     <div className={styles.dashboard}>
       <div className={styles.statsGrid}>
@@ -235,12 +241,22 @@ function Dashboard() {
         <Filters onFilterChange={setFilters} />
       )}
 
+      {viewMode === 'live' && (
+        <div className={styles.liveFilterBar}>
+          <WorkerFilter 
+            sessions={activeSessions}
+            selectedWorkerIds={selectedWorkerIds}
+            onFilterChange={setSelectedWorkerIds}
+          />
+        </div>
+      )}
+
       <div className={styles.content}>
-        {viewMode === 'live' ? (
-          <div className={styles.liveView}>
-            <LiveMap sessions={activeSessions} />
-          </div>
-        ) : (
+          {viewMode === 'live' ? (
+            <div className={styles.liveView}>
+              <LiveMap sessions={filteredActiveSessions} />
+            </div>
+          ) : (
           <div className={styles.historyView}>
             <div className={styles.historyGrid}>
               <div className={styles.sessionListColumn}>
